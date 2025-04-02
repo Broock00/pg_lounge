@@ -11,6 +11,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 TOKEN: Final = os.getenv("BOT_TOKEN")
+STAFF_GROUP_CHAT_ID = int(os.getenv("GROUP_CHAT_ID", "0"))  # Convert to int, default to 0 if not set
+
 # MENU
 MENU = {
     "Drinks": [
@@ -31,9 +33,6 @@ MENU = {
 user_orders = {}
 seen_users = set()
 pending_orders = {}
-
-# Staff group chat ID
-STAFF_GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")
 
 # Start command - Welcome message
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -87,7 +86,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     chat_type = update.message.chat.type
 
     if chat_type in ["group", "supergroup"]:
-        logger.info(f"Message in group chat - Chat ID: {chat_id}")
+        logger.info(f"Message in group chat - Chat ID: {chat_id}, Chat Type: {chat_type}")
 
     # Handle comment input
     if context.user_data.get("awaiting_comment", False):
@@ -151,7 +150,7 @@ async def order(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     keyboard = [
         [InlineKeyboardButton("Confirm Order", callback_data="order_confirm")],
-        [InlineKeyboardButton("Clear Order", callback_data="order_clear")],
+        [InlineKeyboardButton("Cancel Order", callback_data="order_clear")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(response, reply_markup=reply_markup)
@@ -181,10 +180,10 @@ async def send_message_with_retry(bot, chat_id, text, reply_markup=None, max_ret
         except Exception as e:
             if attempt < max_retries - 1:
                 wait_time = 2 ** attempt
-                logger.warning(f"Attempt {attempt + 1} failed: {str(e)}. Retrying in {wait_time}s...")
+                logger.warning(f"Attempt {attempt + 1} failed to send message to chat ID {chat_id}: {str(e)}. Retrying in {wait_time}s...")
                 await asyncio.sleep(wait_time)
             else:
-                logger.error(f"All {max_retries} attempts failed: {str(e)}")
+                logger.error(f"All {max_retries} attempts failed to send message to chat ID {chat_id}: {str(e)}")
                 return False
 
 # Handle button clicks (menu and order actions)
@@ -193,6 +192,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
     chat_id = query.message.chat_id
     user_id = query.from_user.id
+
+    logger.info(f"Button clicked in chat ID: {chat_id}, expected STAFF_GROUP_CHAT_ID: {STAFF_GROUP_CHAT_ID}, callback_data: {query.data}")
 
     if "selected_items" not in context.user_data:
         context.user_data["selected_items"] = {}
@@ -260,6 +261,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 "total": total,
                 "status": "pending"
             }
+            logger.info(f"Order ID: {order_id} added to pending_orders: {pending_orders[order_id]}")
 
             # Prepare confirmation message for user
             confirmation_message = "✅ Order confirmed!\nYour orders:-\n"
@@ -279,27 +281,49 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await query.edit_message_text("No order to confirm! Use /menu to start ordering.")
 
     elif query.data == "order_clear":
-        logger.info(f"Order cleared in chat ID: {chat_id}")
+        logger.info(f"Order canceled in chat ID: {chat_id}")
         user_orders[user_id] = []
-        await query.edit_message_text("🗑️ Order cleared! Start fresh with /menu.")
+        await query.edit_message_text("🗑️ Order canceled! Start fresh with /menu.")
 
     # Handle staff complete action
     elif query.data.startswith("complete_"):
         order_id = query.data.split("_")[1]
+        logger.info(f"Complete button clicked for Order ID: {order_id} in chat ID: {chat_id}")
         if order_id in pending_orders and chat_id == STAFF_GROUP_CHAT_ID:
-            pending_orders[order_id]["status"] = "completed"
-            await query.edit_message_text(f"{query.message.text}\n\n✅ Order ID: {order_id} marked as completed.")
-            del pending_orders[order_id]
+            logger.info(f"Order ID: {order_id} found in pending_orders, marking as completed")
+            try:
+                pending_orders[order_id]["status"] = "completed"
+                await query.edit_message_text(f"{query.message.text}\n\n✅ Order ID: {order_id} marked as completed.")
+                del pending_orders[order_id]
+            except Exception as e:
+                logger.error(f"Failed to edit message for Order ID: {order_id} in chat ID: {chat_id}: {str(e)}")
+        else:
+            logger.warning(f"Failed to complete Order ID: {order_id}. In pending_orders: {order_id in pending_orders}, Chat ID match: {chat_id == STAFF_GROUP_CHAT_ID}")
 
     # Handle staff cancel action
     elif query.data.startswith("cancel_"):
         order_id = query.data.split("_")[1]
+        logger.info(f"Cancel button clicked for Order ID: {order_id} in chat ID: {chat_id}")
         if order_id in pending_orders and chat_id == STAFF_GROUP_CHAT_ID:
-            context.user_data["awaiting_cancel_reason"] = order_id
-            await query.edit_message_text(f"{query.message.text}\n\nPlease enter the reason for canceling Order ID: {order_id}:")
+            logger.info(f"Order ID: {order_id} found in pending_orders, awaiting cancel reason")
+            try:
+                context.user_data["awaiting_cancel_reason"] = order_id
+                await query.edit_message_text(f"{query.message.text}\n\nPlease enter the reason for canceling Order ID: {order_id}:")
+            except Exception as e:
+                logger.error(f"Failed to edit message for Order ID: {order_id} in chat ID: {chat_id}: {str(e)}")
+        else:
+            logger.warning(f"Failed to cancel Order ID: {order_id}. In pending_orders: {order_id in pending_orders}, Chat ID match: {chat_id == STAFF_GROUP_CHAT_ID}")
 
 # Main function to run the bot
 def main() -> None:
+    if not TOKEN:
+        logger.error("BOT_TOKEN environment variable is not set!")
+        raise ValueError("BOT_TOKEN environment variable is not set!")
+
+    if STAFF_GROUP_CHAT_ID == 0:
+        logger.error("GROUP_CHAT_ID environment variable is not set or invalid!")
+        raise ValueError("GROUP_CHAT_ID environment variable is not set or invalid!")
+
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))

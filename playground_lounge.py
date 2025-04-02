@@ -300,7 +300,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 # Main function to run the bot
 def main() -> None:
-    application = Application.builder().token('7871267553:AAEXLxRX7bzeKbp_Va1Svqxhku_DlZr0q-Q').build()
+    application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))

@@ -151,7 +151,7 @@ async def order(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     keyboard = [
         [InlineKeyboardButton("Confirm Order", callback_data="order_confirm")],
-        [InlineKeyboardButton("Clear Order", callback_data="order_clear")],
+        [InlineKeyboardButton("Cancel Order", callback_data="order_clear")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(response, reply_markup=reply_markup)
@@ -279,9 +279,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await query.edit_message_text("No order to confirm! Use /menu to start ordering.")
 
     elif query.data == "order_clear":
-        logger.info(f"Order cleared in chat ID: {chat_id}")
+        # logger.info(f"Order canceled in chat ID: {chat_id}")
         user_orders[user_id] = []
-        await query.edit_message_text("🗑️ Order cleared! Start fresh with /menu.")
+        await query.edit_message_text("🗑️ Order canceled! Start fresh with /menu.")
 
     # Handle staff complete action
     elif query.data.startswith("complete_"):

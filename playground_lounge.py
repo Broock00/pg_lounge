@@ -87,7 +87,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     chat_type = update.message.chat.type
 
     if chat_type in ["group", "supergroup"]:
-        logger.info(f"Message in group chat - Chat ID: {chat_id}")
+        logger.info(f"Message in group chat - Chat ID: {chat_id}, Chat Type: {chat_type}")
 
     # Handle comment input
     if context.user_data.get("awaiting_comment", False):

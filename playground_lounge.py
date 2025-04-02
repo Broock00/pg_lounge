@@ -8,8 +8,7 @@ import uuid
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN: Final = '7871267553:AAEXLxRX7bzeKbp_Va1Svqxhku_DlZr0q-Q'
-
+TOKEN: Final = os.getenv("BOT_TOKEN")
 # MENU
 MENU = {
     "Drinks": [
@@ -32,7 +31,7 @@ seen_users = set()
 pending_orders = {}
 
 # Staff group chat ID
-STAFF_GROUP_CHAT_ID = -4765386461
+STAFF_GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")
 
 # Start command - Welcome message
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

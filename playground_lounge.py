@@ -1,15 +1,14 @@
 import logging
 import asyncio
-from typing import Final
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 import uuid
-import os
+
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN: Final = os.getenv("BOT_TOKEN")
+TOKEN: Final = '7871267553:AAEXLxRX7bzeKbp_Va1Svqxhku_DlZr0q-Q'
 
 # MENU
 MENU = {
@@ -33,7 +32,7 @@ seen_users = set()
 pending_orders = {}
 
 # Staff group chat ID
-STAFF_GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")
+STAFF_GROUP_CHAT_ID = -4765386461
 
 # Start command - Welcome message
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -87,7 +86,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     chat_type = update.message.chat.type
 
     if chat_type in ["group", "supergroup"]:
-        logger.info(f"Message in group chat - Chat ID: {chat_id}, Chat Type: {chat_type}")
+        logger.info(f"Message in group chat - Chat ID: {chat_id}")
 
     # Handle comment input
     if context.user_data.get("awaiting_comment", False):
@@ -151,7 +150,7 @@ async def order(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     keyboard = [
         [InlineKeyboardButton("Confirm Order", callback_data="order_confirm")],
-        [InlineKeyboardButton("Cancel Order", callback_data="order_clear")],
+        [InlineKeyboardButton("Clear Order", callback_data="order_clear")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(response, reply_markup=reply_markup)
@@ -279,9 +278,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await query.edit_message_text("No order to confirm! Use /menu to start ordering.")
 
     elif query.data == "order_clear":
-        # logger.info(f"Order canceled in chat ID: {chat_id}")
+        logger.info(f"Order cleared in chat ID: {chat_id}")
         user_orders[user_id] = []
-        await query.edit_message_text("🗑️ Order canceled! Start fresh with /menu.")
+        await query.edit_message_text("🗑️ Order cleared! Start fresh with /menu.")
 
     # Handle staff complete action
     elif query.data.startswith("complete_"):
@@ -300,7 +299,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 # Main function to run the bot
 def main() -> None:
-    application = Application.builder().token(TOKEN).build()
+    application = Application.builder().token('7871267553:AAEXLxRX7bzeKbp_Va1Svqxhku_DlZr0q-Q').build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))

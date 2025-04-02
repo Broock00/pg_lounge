@@ -33,7 +33,7 @@ seen_users = set()
 pending_orders = {}
 
 # Staff group chat ID
-STAFF_GROUP_CHAT_ID = os.getenv("GROUP_ID")
+STAFF_GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")
 
 # Start command - Welcome message
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

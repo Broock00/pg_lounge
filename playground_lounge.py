@@ -1,4 +1,3 @@
-import os
 import logging
 from typing import Final
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -10,7 +9,7 @@ from telegram.ext import (
     ContextTypes,
     CallbackQueryHandler,
 )
-
+ 
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -26,23 +25,23 @@ STAFF_GROUP_CHAT_ID = int(os.getenv("GROUP_CHAT_ID", "0"))
 MENU = {
     "Drinks": {
         "items": [
-            {"name": "Blue Label", "price": 60000, "description": "Premium whisky 💎", "image_file_id": "AgACAgQAAxkBAAIEAAFn8FsdzCZz7z0UuT1UqkEFfWATvgACVMUxG5yFgFMXvIRVkCnpEwEAAwIAA3gAAzYE"},
-            {"name": "Gold Label", "price": 20000, "description": "Luxury in a bottle ✨", "image_file_id": "AgACAgQAAxkBAAID6GfwU8EufQb3xqgjlz8-930qMHg8AAKnxzEbpcGBU5YUTIqk75O0AQADAgADeQADNgQ"},
-            {"name": "Dabl Black", "price": 15000, "description": "Dark & bold 🖤", "image_file_id": "AgACAgQAAxkBAAID4GfwUwJgw_AvthiFZx8hoHe3BefWAAKvxzEbpcGBUx76BksvlfozAQADAgADeQADNgQ"},
-            {"name": "Black Label", "price": 12000, "description": "Smooth and refined 🥃", "image_file_id": "AgACAgQAAxkBAAID4mfwU0B4FT_foxtHvxDOWhZl6Xi2AAKuxzEbpcGBU-BVGswWgic3AQADAgADeAADNgQ"},
-            {"name": "Jagamastar", "price": 12000, "description": "Energetic spirit ⚡", "image_file_id": "AgACAgQAAxkBAAID7mfwVGsSui9rhycLjk8U1V8kX8qOAAKoxzEbpcGBUxh1Apuo3jtFAQADAgADeAADNgQ"},
-            {"name": "Amarola", "price": 9000, "description": "Sweet cream liqueur 🍬", "image_file_id": "AgACAgQAAxkBAAID9mfwWRaIRTVqGvWSTp4skCl6IMOpAAJOxTEbnIWAUwhwWBV2AAGdvAEAAwIAA3kAAzYE"},
-            {"name": "Gordon", "price": 9000, "description": "Crisp and classic gin 🍸", "image_file_id": "AgACAgQAAxkBAAID5GfwU3boWILCRkDf1CfKAU7TxfAMAAKtxzEbpcGBU8BkICnOhhU6AQADAgADeAADNgQ"},
-            {"name": "Wintar", "price": 7000, "description": "Refreshing vibes ❄️", "image_file_id": "AgACAgQAAxkBAAID_mfwWvz7F3nsl4UMyFH83llWLfXuAAJTxTEbnIWAU5dsVT2eeIDTAQADAgADeQADNgQ"},
-            {"name": "Black ba cc", "price": 600, "description": "Black Label by the cc 🔸", "image_file_id": "AgACAgQAAxkBAAID8mfwWNYD7Sr6Dze_gqDwSCD87vUmAAJLxTEbnIWAU44T8JLCuQ1YAQADAgADeAADNgQ"},
-            {"name": "Amarola ba cc", "price": 600, "description": "Amarola by the cc 💧", "image_file_id": "AgACAgQAAxkBAAID_GfwWl_ihX9C6YfnsJSJ1kG8LIx6AAJSxTEbnIWAUzp6EQeIYSubAQADAgADeQADNgQ"},
-            {"name": "Gordan ba cc", "price": 500, "description": "Gordon’s gin by cc 🌿", "image_file_id": "AgACAgQAAxkBAAID9GfwWPQbXdZ4jgeOU7gsM6MJgpVbAAJMxTEbnIWAUzCH5z7uXH1gAQADAgADeAADNgQ"},
-            {"name": "Sambuka (1 shot)", "price": 500, "description": "Anise-flavored shot 🔥", "image_file_id": "AgACAgQAAxkBAAID5mfwU5QkFjSPe2vr1d9B1Sm9h0GRAAKsxzEbpcGBU0t5-Xvz2cs4AQADAgADeAADNgQ"},
-            {"name": "Takila (1 shot)", "price": 500, "description": "Bold tequila shot 🧨", "image_file_id": "AgACAgQAAxkBAAID6mfwU-P66E1LmKsG6XtHinN5_V0mAAKixzEbpcGBU7pUSCXI3BVqAQADAgADeAADNgQ"},
-            {"name": "Hokah", "price": 400, "description": "Smooth smoking 🌀", "image_file_id": "AgACAgQAAxkBAAID8GfwWLqkx-uMX5aAUCLtN3OXvtZgAAJKxTEbnIWAU36fcmpffm9oAQADAgADbQADNgQ"},
-            {"name": "Red Bull", "price": 600, "description": "Wings incoming 🪽", "image_file_id": "AgACAgQAAxkBAAID-GfwWVlkEUakzp3EphVWBAreEr3RAAKexzEbpcGBUyMZBUW6qp5uAQADAgADeQADNgQ"},
-            {"name": "Birra", "price": 150, "description": "Local taste 🍻", "image_file_id": "AgACAgQAAxkBAAIEAmfwW5AeizmttqIHaVqvRw4FCkDGAAJVxTEbnIWAUzo9il2NLE9vAQADAgADeQADNgQ"},
-            {"name": "Water", "price": 100, "description": "Stay hydrated 💧", "image_file_id": "AgACAgQAAxkBAAID-mfwWXPTbjAHZkisoml_DN8yaqPUAAJQxTEbnIWAU7oyuoQ0evjBAQADAgADeAADNgQ"},
+            {"name": "Blue Label", "price": 60000, "description": "Premium whisky 💎", "image_file_id": "AgACAgQAAxkBAANUZ_EmOD0zUD2R4o78cgoCsMTXhsEAAlTEMRtPHohT3k2T0b96lRABAAMCAAN4AAM2BA"},
+            {"name": "Gold Label", "price": 20000, "description": "Luxury in a bottle ✨", "image_file_id": "AgACAgQAAxkBAANcZ_EmyV6qboXNAu3UP4vlrFk97H4AAljEMRtPHohTBNFbR-PhVXEBAAMCAAN5AAM2BA"},
+            {"name": "Dabl Black", "price": 15000, "description": "Dark & bold 🖤", "image_file_id": "AgACAgQAAxkBAANaZ_EmpFvPp8LLsW8YI8N3amfMmzIAAlfEMRtPHohToO3o1ZctnhoBAAMCAAN5AAM2BA"},
+            {"name": "Black Label", "price": 12000, "description": "Smooth and refined 🥃", "image_file_id": "AgACAgQAAxkBAANWZ_EmWllOXh6S_QFULOwzOIkv2-gAAlXEMRtPHohTbe2vIwqvhUgBAAMCAAN4AAM2BA"},
+            {"name": "Jagamastar", "price": 12000, "description": "Energetic spirit ⚡", "image_file_id": "AgACAgQAAxkBAANgZ_EnArHeA2wmxRfNv98Fk8puF1MAAlnEMRtPHohTSaAHcL0tjv0BAAMCAAN4AAM2BA"},
+            {"name": "Amarola", "price": 9000, "description": "Sweet cream liqueur 🍬", "image_file_id": "AgACAgQAAxkBAANiZ_EnGsBF9jN4jg594Usd27hCRfAAAlrEMRtPHohTeiK4CivYgWEBAAMCAAN5AAM2BA"},
+            {"name": "Gordon", "price": 9000, "description": "Crisp and classic gin 🍸", "image_file_id": "AgACAgQAAxkBAANkZ_EnM8JtVHMmZtMYOp3j7qIVWNsAAlzEMRtPHohTYgKw3ilUe6sBAAMCAAN4AAM2BA"},
+            {"name": "Wintar", "price": 7000, "description": "Refreshing vibes ❄️", "image_file_id": "AgACAgQAAxkBAANmZ_EnUoNfUjPH6ZEHqIK03waNVSYAAl3EMRtPHohT0HyRrJqAapwBAAMCAAN5AAM2BA"},
+            {"name": "Black ba cc", "price": 600, "description": "Black Label by the cc 🔸", "image_file_id": "AgACAgQAAxkBAANoZ_EnbWg3UVAIIxEvzBm7M7Nyw8cAAl7EMRtPHohTmQiucukCHAwBAAMCAAN4AAM2BA"},
+            {"name": "Amarola ba cc", "price": 600, "description": "Amarola by the cc 💧", "image_file_id": "AgACAgQAAxkBAANqZ_Eng5NYoY7ZMoETiUQdYp4FqKkAAl_EMRtPHohTysFVxVhRK6ABAAMCAAN5AAM2BA"},
+            {"name": "Gordan ba cc", "price": 500, "description": "Gordon’s gin by cc 🌿", "image_file_id": "AgACAgQAAxkBAANsZ_EnmOr0V86ki7N1_MFQEuRiCm0AAmDEMRtPHohT5JbD5rYL2jcBAAMCAAN4AAM2BA"},
+            {"name": "Sambuka (1 shot)", "price": 500, "description": "Anise-flavored shot 🔥", "image_file_id": "AgACAgQAAxkBAANuZ_EnuFxq2EzvjF-CrTk28a7-H4UAAmHEMRtPHohTuTDSsbmvUP8BAAMCAAN4AAM2BA"},
+            {"name": "Takila (1 shot)", "price": 500, "description": "Bold tequila shot 🧨", "image_file_id": "AgACAgQAAxkBAANwZ_En0qS3_KaDQs7yyOPpI6Xnr_cAAmLEMRtPHohTR9wIlS7dt9ABAAMCAAN4AAM2BA"},
+            {"name": "Hokah", "price": 400, "description": "Smooth smoking 🌀", "image_file_id": "AgACAgQAAxkBAANyZ_En60Ufj0GgHdYf7q6OTBRKFyYAAmPEMRtPHohTBqSNldykgkMBAAMCAANtAAM2BA"},
+            {"name": "Red Bull", "price": 600, "description": "Wings incoming 🪽", "image_file_id": "AgACAgQAAxkBAAN0Z_EoC4qzB2MP_NHeapdpcwPWl-AAAmTEMRtPHohTqg7SKIW8C4ABAAMCAAN5AAM2BA"},
+            {"name": "Birra", "price": 150, "description": "Local taste 🍻", "image_file_id": "AgACAgQAAxkBAAN2Z_Eoiq8Qg8dUyf-DWWhYBzurXEYAAmbEMRtPHohTXdrBcTVWWkEBAAMCAAN5AAM2BA"},
+            {"name": "Water", "price": 100, "description": "Stay hydrated 💧", "image_file_id": "AgACAgQAAxkBAAN4Z_EoqUWzSA9lQLz0wY0mrFg0q0IAAmfEMRtPHohTPhFgjpty0R8BAAMCAAN4AAM2BA"},
         ]
     }
 }
